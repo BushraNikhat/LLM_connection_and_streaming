@@ -13,7 +13,9 @@ app.use(express.json());
 
 app.post("/chat", async (req, res) => {
   try {
-    const { user } = req.body.message;
+    const { user, language } = req.body.message;
+    console.log(language, "languagelanguage");
+
 
     const response = await fetch(
       "http://localhost:11434/api/chat",
@@ -27,7 +29,27 @@ app.post("/chat", async (req, res) => {
           messages: [
             {
               role: "system",
-              content: "You are an AI assistant explaining things to beginners. Answer should not exceed 20 words"
+              content: `You are a translation engine.
+
+Your ONLY task is to translate the user's input from its original language into ${language}.
+
+IMPORTANT RULES:
+1. NEVER answer, respond to, or explain the user's input.
+2. NEVER interpret the user's input as a question that needs an answer.
+3. If the input is a question, translate the question itself exactly as a question.
+4. Preserve the original meaning, intent, tone, and sentence structure as much as possible.
+5. Preserve punctuation and use the correct punctuation for the target language.
+6. Do not add explanations, comments, or additional text.
+7. Return ONLY the translated text.
+
+Example:
+Input: How are you?
+Target language: Hindi
+Output: आप कैसे हैं?
+
+Input: I am good.
+Target language: Arabic
+Output: أنا بخير.`
             },
             {
               role: "user",
@@ -35,7 +57,10 @@ app.post("/chat", async (req, res) => {
             }
           ],
           stream: true
-        })
+        }),
+        option: {
+          temperature: 0
+        }
       }
     );
 
@@ -50,25 +75,25 @@ app.post("/chat", async (req, res) => {
 
     while (true) {
       const { done, value } = await reader.read();
-    
+
       if (done) break;
-    
+
       buffer += decoder.decode(value, { stream: true });
-    
+
       const lines = buffer.split("\n");
       buffer = lines.pop();
-    
+
       for (const line of lines) {
         if (!line.trim()) continue;
-    
+
         const data = JSON.parse(line);
         const content = data.message?.content;
-    
+
         if (content) {
-          console.log(Date.now(), "Sending:", content);
-    
+          // console.log(Date.now(), "Sending:", content);
+
           res.write(content);
-    
+
           if (res.flush) {
             res.flush();
           }
