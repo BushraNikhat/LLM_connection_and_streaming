@@ -40,7 +40,7 @@ IMPORTANT RULES:
 4. Preserve the original meaning, intent, tone, and sentence structure as much as possible.
 5. Preserve punctuation and use the correct punctuation for the target language.
 6. Do not add explanations, comments, or additional text.
-7. Return ONLY the translated text.
+7. Return ONLY the translated text..
 
 Example:
 Input: How are you?
