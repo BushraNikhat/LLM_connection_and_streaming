@@ -17,7 +17,7 @@ function App() {
       });
       const data = await response.json();
       
-      setAnswer(data.message?.content || "No response from AI");
+      setAnswer(data?.message || "No response from AI");
 
     } catch (error) {
       console.error("Error:", error)
