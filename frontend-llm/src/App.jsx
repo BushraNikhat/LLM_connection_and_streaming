@@ -3,34 +3,6 @@ import { useState } from "react";
 function App() {
   const [message, setMessage] = useState("");
   const [answer, setAnswer] = useState("");
-  const [language, setLanguage] = useState("");
-
-  // const handleGet = async () => {
-  //   try {
-  //     setAnswer("");
-
-  //     const response = await fetch(
-  //       "http://localhost:3000/stream"
-  //     );
-
-  //     const reader = response.body.getReader();
-  //     const decoder = new TextDecoder();
-
-  //     while (true) {
-  //       const { done, value } = await reader.read();
-
-  //       if (done) break;
-
-  //       const chunk = decoder.decode(value, {
-  //         stream: true,
-  //       });
-
-  //       setAnswer((prev) => prev + chunk);
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
 
   const handleSend = async () => {
     try {
@@ -40,35 +12,16 @@ function App() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          message: { user: message, language }
+          message: { user: message, convoId: "123" }
         })
       });
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-
-      setAnswer("");
-
-      while (true) {
-        const { done, value } = await reader.read();
-
-        if (done) {
-          break;
-        }
-
-        const chunk = decoder.decode(value);
-
-        console.log(Date.now(), "Received:", chunk);
-
-        setAnswer((prev) => prev + chunk);
-      }
+      const data = await response.json();
+      
+      setAnswer(data.message?.content || "No response from AI");
 
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error:", error)
     }
-  };
-  const handleChange = (e) => {
-    setLanguage(e.target.value);
   };
 
 
@@ -86,13 +39,13 @@ function App() {
       <button onClick={handleSend}>
         Send
       </button>
-      <select value={language} onChange={handleChange}>
+      {/* <select value={language} onChange={handleChange}>
         <option value="">Select Language</option>
         <option value="Hindi">Hindi</option>
         <option value="Arabic">Arabic</option>
         <option value="Bangla">Bangla</option>
         <option value="Spanish">Spanish</option>
-      </select>
+      </select> */}
       {/* <h3>AI Response:</h3>
       <h1>Simple streamer</h1>
       <button onClick={handleGet}>Read Stream</button> */}
